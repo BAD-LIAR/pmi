@@ -71,10 +71,9 @@ public class HelloApplication extends Application {
                 text.setY(25 + 60 * i);
                 text.setX(40);
                 int color = random.nextInt(12);
+                text.setStyle("-fx-font: 24 arial;");
                 if (color % 3 == 0) {
-                    text.setStyle("-fx-font: 24 arial;color:red;");
-                } else {
-                    text.setStyle("-fx-font: 24 arial;");
+                    text.setFill(Color.RED);
                 }
                 group.getChildren().add(text);
             } else {
