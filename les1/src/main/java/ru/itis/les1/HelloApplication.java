@@ -6,8 +6,10 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -48,20 +50,30 @@ public class HelloApplication extends Application {
         button.setDefaultButton(true);
         button.setMaxSize(50, 25);
         button.setMinSize(50, 25);
+        CheckBox showPic = new CheckBox("Show pictures");
+        showPic.setLayoutY(100);
+        CheckBox differentColors = new CheckBox("Show digits with different colors");
+        differentColors.setLayoutY(200);
         TextField textField = new TextField();
-        button.setOnAction(actionEvent -> start(Integer.parseInt(textField.getText())));
+        button.setOnAction(actionEvent ->
+                start(6, showPic.selectedProperty().get(), differentColors.selectedProperty().get()));
         Group group = new Group();
         group.getChildren().add(button);
-        group.getChildren().add(textField);
+//        group.getChildren().add(textField);
+        group.getChildren().add(showPic);
+        group.getChildren().add(differentColors);
         return new Scene(group, 800, 800);
     }
 
-    private void start(int digtCounts) {
+    private void start(int digtCounts, boolean showPic, boolean diffColors) {
         Random random = new Random();
         Group group = new Group();
         set = new HashSet<>();
+        int count = digtCounts / 2;
+        int diffC = digtCounts / 2;
         for (int i = 0; i < digtCounts; i++) {
-            if (random.nextBoolean()) {
+            if (!showPic || random.nextBoolean() && count > 0 || digtCounts - i <= count) {
+                count--;
                 int value = random.nextInt(10);
                 while (set.contains(value)) {
                     value = random.nextInt(10);
@@ -72,8 +84,9 @@ public class HelloApplication extends Application {
                 text.setX(40);
                 int color = random.nextInt(12);
                 text.setStyle("-fx-font: 24 arial;");
-                if (color % 3 == 0) {
+                if (diffColors &&( color % 2 == 0 && diffC > 0 || digtCounts - i <= diffC)) {
                     text.setFill(Color.RED);
+                    diffC--;
                 }
                 group.getChildren().add(text);
             } else {
@@ -93,11 +106,14 @@ public class HelloApplication extends Application {
                 }
             }
         }
+
         mainStage.setScene(new Scene(group, 800, 800));
 
         Timeline fiveSecondsWonder = new Timeline(
-                new KeyFrame(Duration.seconds(5),
-                        event -> {timeOverScene();}));
+                new KeyFrame(Duration.seconds(2),
+                        event -> {
+                            timeOverScene();
+                        }));
         fiveSecondsWonder.setCycleCount(1);
         fiveSecondsWonder.play();
     }
@@ -126,6 +142,9 @@ public class HelloApplication extends Application {
         restartButton.setOnAction(actionEvent -> mainStage.setScene(getMainScene()));
         restartButton.setLayoutY(250);
         group.getChildren().add(restartButton);
-        mainStage.setScene(new Scene(group, 800, 800));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(group, 800, 800));
+        stage.show();
+//        mainStage.setScene(new Scene(group, 800, 800));
     }
 }
